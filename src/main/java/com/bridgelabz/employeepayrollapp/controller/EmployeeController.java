@@ -1,10 +1,10 @@
-package com.bridgelabz.employeepayrollapp1.controller;
+package com.bridgelabz.employeepayrollapp.controller;
 
 import java.util.List;
 
-import com.bridgelabz.employeepayrollapp1.dto.EmployeeDTO;
-import com.bridgelabz.employeepayrollapp1.entity.Employeedetails;
-import com.bridgelabz.employeepayrollapp1.service.IEmployeeService;
+import com.bridgelabz.employeepayrollapp.dto.EmployeeDTO;
+import com.bridgelabz.employeepayrollapp.entity.Employeedetails;
+import com.bridgelabz.employeepayrollapp.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +25,7 @@ public class EmployeeController {
     }
     //localhost:8080/employee/add
     @PostMapping("/employee/add")
-    public Employeedetails addEmployee(@RequestBody Employeedetails employee){
+    public EmployeeDTO addEmployee(@RequestBody EmployeeDTO employee){
         return employeeService.addEmployee(employee);
     }
 
