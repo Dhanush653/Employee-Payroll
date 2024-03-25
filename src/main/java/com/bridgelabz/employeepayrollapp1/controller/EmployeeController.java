@@ -2,18 +2,20 @@ package com.bridgelabz.employeepayrollapp1.controller;
 
 import java.util.List;
 
+import com.bridgelabz.employeepayrollapp1.dto.EmployeeDTO;
 import com.bridgelabz.employeepayrollapp1.entity.Employeedetails;
 import com.bridgelabz.employeepayrollapp1.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(allowedHeaders = "*")
 public class EmployeeController {
     @Autowired
     private IEmployeeService employeeService;
     //localhost:8080/employees
     @GetMapping("/employees")
-    public List<Employeedetails> getAllEmployees(){
+    public List<EmployeeDTO> getAllEmployees(){
         return employeeService.getAllEmployees();
     }
     //localhost:8080/employee/id
@@ -26,6 +28,7 @@ public class EmployeeController {
     public Employeedetails addEmployee(@RequestBody Employeedetails employee){
         return employeeService.addEmployee(employee);
     }
+
     //localhost:8080/employee/update/id
     @PutMapping("/employee/update/{id}")
     public Employeedetails updateEmployee(@PathVariable int id){
