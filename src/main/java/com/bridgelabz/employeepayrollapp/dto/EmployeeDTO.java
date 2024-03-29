@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class EmployeeDTO {
+    private int id;
     private String name;
     private String profileimage;
     private String gender;

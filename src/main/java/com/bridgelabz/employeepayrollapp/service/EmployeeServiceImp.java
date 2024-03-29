@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +22,7 @@ public class EmployeeServiceImp implements IEmployeeService{
         List<EmployeeDTO> allemployee = employeeRepository.findAll()
                 .stream()
                 .map(Employeedetails -> new EmployeeDTO(
+                        Employeedetails.getEmployee_id(),
                         Employeedetails.getEmployee_name(),
                         Employeedetails.getEmployee_profilepicture(),
                         Employeedetails.getEmployee_gender(),
@@ -32,17 +34,28 @@ public class EmployeeServiceImp implements IEmployeeService{
         return allemployee;
     }
     @Override
-    public Employeedetails getEmployeeById(int id) {
-        Employeedetails employeeOptional = employeeRepository.findById(id).get();
-        return employeeOptional;
+    public EmployeeDTO getEmployeeById(int id) {
+        Employeedetails employee = employeeRepository.findById(id).get();
+        // Map entity fields to DTO fields
+        EmployeeDTO employeeDTO = new EmployeeDTO(
+                employee.getEmployee_id(),
+                employee.getEmployee_name(),
+                employee.getEmployee_profilepicture(),
+                employee.getEmployee_gender(),
+                Arrays.asList(employee.getEmployee_department()), // Assuming a single department as a String
+                employee.getEmployee_salary(),
+                employee.getEmployee_startdate(),
+                employee.getEmployee_note()
+        );
+        return employeeDTO;
     }
+
     @Override
     public EmployeeDTO addEmployee(EmployeeDTO employeeDTO) {
         Employeedetails employee = new Employeedetails();
         employee.setEmployee_name(employeeDTO.getName());
         employee.setEmployee_profilepicture(employeeDTO.getProfileimage());
         employee.setEmployee_gender(employeeDTO.getGender());
-        // Convert the List<String> department to a comma-separated string
         String department = String.join(",", employeeDTO.getDepartment());
         employee.setEmployee_department(department);
         employee.setEmployee_salary(employeeDTO.getSalary());
@@ -50,10 +63,10 @@ public class EmployeeServiceImp implements IEmployeeService{
         employee.setEmployee_note(employeeDTO.getNotes());
         Employeedetails savedEmployee = employeeRepository.save(employee);
         return new EmployeeDTO(
+                savedEmployee.getEmployee_id(),
                 savedEmployee.getEmployee_name(),
                 savedEmployee.getEmployee_profilepicture(),
                 savedEmployee.getEmployee_gender(),
-                // Split the department string back into a List<String>
                 Arrays.asList(savedEmployee.getEmployee_department().split(",")),
                 savedEmployee.getEmployee_salary(),
                 savedEmployee.getEmployee_startdate(),
@@ -61,16 +74,56 @@ public class EmployeeServiceImp implements IEmployeeService{
         );
     }
 
-    @Override
-    public Employeedetails updateEmployee(@PathVariable int id){
-        Employeedetails employee = employeeRepository.findById(id).get();
-        employee.setEmployee_name("Mohamed");
-        employee.setEmployee_salary(34500);
-        employeeRepository.save(employee);
-        return employee;
+
+//    public Employeedetails updateEmployee(int id, EmployeeDTO empDTO){
+//        Optional<Employeedetails> data = employeeRepository.findById(id);
+//        if(data.isPresent()){
+//            data.get().setEmployee_name(empDTO.getName());
+//            data.get().setEmployee_profilepicture(empDTO.getProfileimage());
+//            data.get().setEmployee_salary(empDTO.getSalary());
+//            data.get().setEmployee_startdate(empDTO.getStartdate());
+//            data.get().setEmployee_gender(empDTO.getGender());
+//            data.get().setEmployee_note(empDTO.getNotes());
+//            data.get().setEmployee_department(String.valueOf(empDTO.getDepartment()));
+//            return employeeRepository.save(data.get());
+//        }
+//        return null;
+//    }
+@Override
+public EmployeeDTO updateEmployee(int id, EmployeeDTO empDTO) {
+    Optional<Employeedetails> employeeOptional = employeeRepository.findById(id);
+    if (employeeOptional.isPresent()) {
+        Employeedetails employee = employeeOptional.get();
+
+        // Update fields from DTO to entity
+        employee.setEmployee_name(empDTO.getName());
+        employee.setEmployee_profilepicture(empDTO.getProfileimage());
+        employee.setEmployee_salary(empDTO.getSalary());
+        employee.setEmployee_startdate(empDTO.getStartdate());
+        employee.setEmployee_gender(empDTO.getGender());
+        employee.setEmployee_note(empDTO.getNotes());
+        employee.setEmployee_department(String.valueOf(empDTO.getDepartment().get(0))); // Assuming first department
+
+        // Save updated entity
+        Employeedetails savedEmployee = employeeRepository.save(employee);
+
+        // Create and return updated DTO
+        return new EmployeeDTO(
+                savedEmployee.getEmployee_id(),
+                savedEmployee.getEmployee_name(),
+                savedEmployee.getEmployee_profilepicture(),
+                savedEmployee.getEmployee_gender(),
+                Arrays.asList(savedEmployee.getEmployee_department()), // Convert back to List for DTO
+                savedEmployee.getEmployee_salary(),
+                savedEmployee.getEmployee_startdate(),
+                savedEmployee.getEmployee_note()
+        );
     }
+    return null;
+}
+
     @Override
-    public void deleteEmployee(@PathVariable int id){
+    public void deleteEmployee(int id){
         Employeedetails employee = employeeRepository.findById(id).get();
         employeeRepository.delete(employee);
     }

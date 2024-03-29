@@ -30,5 +30,7 @@ public class Employeedetails {
     @Column(name = "note")
     private String employee_note;
     @Column(name = "department")
+    @ElementCollection
+    @CollectionTable(name = "Emp_dept", joinColumns = @JoinColumn(name = "id"))
     private String employee_department;
 }

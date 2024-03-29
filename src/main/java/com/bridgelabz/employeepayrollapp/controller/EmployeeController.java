@@ -20,7 +20,7 @@ public class EmployeeController {
     }
     //localhost:8080/employee/id
     @GetMapping("/employee/{id}")
-    public Employeedetails getEmployeeById(@PathVariable int id){
+    public EmployeeDTO getEmployeeById(@PathVariable int id){
         return employeeService.getEmployeeById(id);
     }
     //localhost:8080/employee/add
@@ -31,8 +31,8 @@ public class EmployeeController {
 
     //localhost:8080/employee/update/id
     @PutMapping("/employee/update/{id}")
-    public Employeedetails updateEmployee(@PathVariable int id){
-        return employeeService.updateEmployee(id);
+    public EmployeeDTO updateEmployee(@PathVariable int id, @RequestBody EmployeeDTO empDTO){
+        return employeeService.updateEmployee(id,empDTO);
     }
     //localhost:8080/employee/delete/idi
     @DeleteMapping("/employee/delete/{id}")
